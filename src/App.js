@@ -1,23 +1,21 @@
-import logo from './logo.svg';
+import logo from './imgs/logo-9_16.png';
 import './App.css';
+import Header from './components/Header';
+import Home from './components/Home';
+import './i18n.js';
+import Footer from './components/Footer.js';
+import Wahy from './components/Wahy.js';
+import DailyAyahHadith from './components/DailyAyahHadith.js';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="dark:bg-gray-800 min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow">
+        <Home />
+        <DailyAyahHadith />
+      </main>
+      <Footer />
     </div>
   );
 }

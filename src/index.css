@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi+Fun&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,7 +12,75 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.font-reem {
+  font-family: 'Reem Kufi Fun', sans-serif;
+}
+
+/* System font stack to use for exceptions (e.g., prayer times and header title) */
+.font-system {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+.inset-shadow {
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.393);
+}
+
+.bg-fade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: black;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.9rgba(217, 217, 217, 0.6)27,0.6) 30%, rgba(2,12,27,0.2) 60%, rgba(2,12,27,0) 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.circle{
+  box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.619);
+}
+
+.circle::after{
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #4A90E2;
+  pointer-events: none;
+  z-index: 10;
+  height: 88%;
+  aspect-ratio: 1 / 1; 
+  border-radius: 50%;
+  transition: 300ms ease-in-out;
+  box-shadow: 0px 0px 4px 0px rgb(129, 129, 129);
+}
+.home-bg::before{
+  content: "";
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background-image: url('./imgs/jerusalem.png');
+  background-size: contain;
+  background-position: right;
+  position: absolute;
+  background-repeat: no-repeat;
+  opacity: .030;
+}
+.home-bg-mobile::before{
+  content: "";
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background-image: url('./imgs/umayyad_mosque.png');
+  background-size: contain;
+  background-position: right;
+  position: absolute;
+  background-repeat: no-repeat;
+  opacity: .030;
 }
