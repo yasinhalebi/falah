@@ -1,10 +1,8 @@
-import logo from './imgs/logo-9_16.png';
 import './App.css';
 import Header from './components/Header';
 import Home from './components/Home';
 import './i18n.js';
 import Footer from './components/Footer.js';
-import Wahy from './components/Wahy.js';
 import DailyAyahHadith from './components/DailyAyahHadith.js';
 
 function App() {

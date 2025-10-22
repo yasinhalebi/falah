@@ -1,6 +1,6 @@
 import { HiBadgeCheck } from "react-icons/hi";
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import PrayerCard from './PrayerCard';
 import umayyad from '../imgs/umayyad_mosque.png';
 import kaaba from '../imgs/kaaba.png';
