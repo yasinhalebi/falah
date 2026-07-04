@@ -34,7 +34,7 @@ const DailyAyahHadith = () => {
 
         // إرسال طلبات لكل لغة بالتوازي باستخدام Promise.all
         const promises = languages.map(lang =>
-          fetch(`http://api.alquran.cloud/v1/ayah/${ayahIndex}/${lang.edition}`)
+          fetch(`https://api.alquran.cloud/v1/ayah/${ayahIndex}/${lang.edition}`)
             .then(res => res.json())
             .then(data => {
               if (data.code === 200 && data.data) {
@@ -92,32 +92,51 @@ const DailyAyahHadith = () => {
           setHadith({ text: hadithArabic, resourse: 'صحيح البخاري' });
           setHadithEnglish({ text: hadithEnglish, resourse: 'Sahih Al-Bukhari' });
 
-          // ترجمة الحديث إلى التركية باستخدام Microsoft Translator API
+          // ترجمة الحديث إلى التركية باستخدام Microsoft Translator API مع Fallback لـ Google Translate
           const translateHadith = async (text) => {
-            try {
-              const response = await fetch(
-                `${MICROSOFT_ENDPOINT}/translate?api-version=3.0&from=ar&to=tr`,
-                {
-                  method: 'POST',
-                  headers: {
-                    'Ocp-Apim-Subscription-Key': MICROSOFT_TRANSLATE_API_KEY,
-                    'Ocp-Apim-Subscription-Region': MICROSOFT_REGION,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify([{ Text: text }]),
+            // المحاولة الأولى: استخدام Microsoft Translator إذا كانت المفاتيح متوفرة
+            if (MICROSOFT_TRANSLATE_API_KEY && MICROSOFT_ENDPOINT) {
+              try {
+                const response = await fetch(
+                  `${MICROSOFT_ENDPOINT}/translate?api-version=3.0&from=ar&to=tr`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Ocp-Apim-Subscription-Key': MICROSOFT_TRANSLATE_API_KEY,
+                      'Ocp-Apim-Subscription-Region': MICROSOFT_REGION,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify([{ Text: text }]),
+                  }
+                );
+                if (response.ok) {
+                  const data = await response.json();
+                  if (data[0] && data[0].translations && data[0].translations[0].text) {
+                    return data[0].translations[0].text;
+                  }
                 }
+              } catch (error) {
+                console.warn('Microsoft Translator failed, trying Google Translate fallback:', error);
+              }
+            }
+
+            // المحاولة الثانية: استخدام Google Translate API المجاني كبديل تلقائي
+            try {
+              const googleResponse = await fetch(
+                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=tr&dt=t&q=${encodeURIComponent(text)}`
               );
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+              if (!googleResponse.ok) {
+                throw new Error(`Google Translate API error! Status: ${googleResponse.status}`);
               }
-              const data = await response.json();
-              console.log('Microsoft Translator Response:', data); // لتسجيل الاستجابة
-              if (data[0] && data[0].translations && data[0].translations[0].text) {
-                return data[0].translations[0].text;
+              const googleData = await googleResponse.json();
+              if (googleData && googleData[0]) {
+                // تجميع النص المترجم من الأجزاء (في حال كان النص طويلاً ومقسماً)
+                const translatedText = googleData[0].map(segment => segment[0]).join('');
+                return translatedText;
               }
-              throw new Error('فشل ترجمة الحديث');
+              throw new Error('Invalid response from Google Translate');
             } catch (error) {
-              console.error('خطأ في ترجمة الحديث إلى التركية:', error);
+              console.error('All translation attempts failed:', error);
               return 'Hadis çevrilemedi';
             }
           };
@@ -138,7 +157,7 @@ const DailyAyahHadith = () => {
           resourse: 'Sahih Al-Bukhari',
         });
         setHadithTurkish({
-          text: 'Hadis çevrilemedi',
+          text: 'Resûlullah (sallallahu aleyhi ve sellem) şöyle buyurdu: Kim günde yüz defa "Sübhânallahi ve bi-hamdihî" derse, günahları deniz köpüğü kadar bile olsa bağışlanır.',
           resourse: 'Sahih Buhari',
         });
       }

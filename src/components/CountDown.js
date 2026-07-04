@@ -44,21 +44,19 @@ export default function CountDown({ hour, minute }) {
   }, [hour, minute, currentTime]);
 
   return (
-    <div className="w-full h-full">
-      <div className="relative w-full h-full ring-white dark:ring-[#1E2A38] rounded-full bg-white dark:bg-[#1E2A38]">
-        <div>
-          <CircularProgressbar 
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full ring-white dark:ring-[#1E2A38] rounded-full bg-white dark:bg-[#1E2A38] flex items-center justify-center p-4">
+        <CircularProgressbar 
           value={remainingTime} 
-          className='p-0 m-0 '
           text={text}
           maxValue={10000}
           styles={buildStyles({
             textColor:'rgba(253, 224, 71, 0.9)',
             tailColor:'rgba(255,255,255,.2)',
             pathColor:'rgba(253, 224, 71, 0.9)',
-          })}/>
-          <h1 className='absolute right-[50%] translate-x-1/2 top-[50%] translate-y-10 text-xs bg-yellow-400/90 text-indigo-950/80 rounded-full px-2 py-[1px] text-nowrap font-bold'>{t("timeRemaining")}</h1>
-        </div>
+          })}
+        />
+        <h1 className='absolute right-[50%] translate-x-1/2 top-[50%] translate-y-10 text-xs bg-yellow-400/90 text-indigo-950/80 rounded-full px-2 py-[1px] text-nowrap font-bold'>{t("timeRemaining")}</h1>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import logo from '../imgs/logo-1_1.png';
+import logo from '../imgs/logo ai.jpeg';
 import us from '../imgs/us.png';
 import ar from '../imgs/sy.png';
 import tr from '../imgs/tr.png';

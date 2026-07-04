@@ -9,7 +9,7 @@ export default function Location({ country, setCountry, city, setCity, loading, 
   const API_KEY = "WVltMWZVem4zcmd5cnVSWlhIelRZMXBIWDBwZkRnV0N1aDZUaElBTg==";
 
   const [error, setError] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState("SA");
+  const [selectedCountry, setSelectedCountry] = useState(() => localStorage.getItem("falah_country_code") || "SA");
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState(null);
 
@@ -43,8 +43,19 @@ export default function Location({ country, setCountry, city, setCity, loading, 
       );
       if (!response.ok) throw new Error("Failed to fetch location data");
       const data = await response.json();
-      setCountry(data.countryName);
-      setCity(data.city || data.locality);
+      const countryName = data.countryName;
+      const cityName = data.city || data.locality;
+      const countryCode = data.countryCode;
+
+      setCountry(countryName);
+      setCity(cityName);
+
+      localStorage.setItem("falah_country", countryName);
+      localStorage.setItem("falah_city", cityName);
+      if (countryCode) {
+        setSelectedCountry(countryCode);
+        localStorage.setItem("falah_country_code", countryCode);
+      }
     } catch (error) {
       setError(t("errorFetchingLocation"));
       console.error("Error in reverse geocoding:", error);
@@ -70,7 +81,17 @@ export default function Location({ country, setCountry, city, setCity, loading, 
             label: state.name,
           }));
           setStates(stateOptions);
-          setSelectedState(null);
+          
+          // Pre-select matching state from states list
+          const storedCity = localStorage.getItem("falah_city");
+          if (storedCity) {
+            const foundState = stateOptions.find(
+              (prev) => prev.label.toLowerCase() === storedCity.toLowerCase()
+            );
+            setSelectedState(foundState || null);
+          } else {
+            setSelectedState(null);
+          }
         })
         .catch((error) => {
           setError(t("errorFetchingStates"));
@@ -100,7 +121,10 @@ export default function Location({ country, setCountry, city, setCity, loading, 
           selected={selectedCountry}
           onSelect={(code) => {
             setSelectedCountry(code);
-            setCountry(Countries[code] || code);
+            const countryName = Countries[code] || code;
+            setCountry(countryName);
+            localStorage.setItem("falah_country_code", code);
+            localStorage.setItem("falah_country", countryName);
           }}
           searchable={true}
           searchPlaceholder={t("countrySearch")}
@@ -116,7 +140,13 @@ export default function Location({ country, setCountry, city, setCity, loading, 
           value={selectedState}
           onChange={(e) => {
             setSelectedState(e);
-            setCity(e ? e.label : null);
+            const cityName = e ? e.label : null;
+            setCity(cityName);
+            if (cityName) {
+              localStorage.setItem("falah_city", cityName);
+            } else {
+              localStorage.removeItem("falah_city");
+            }
           }}
           isSearchable={true}
           placeholder={t("stateSearch")}

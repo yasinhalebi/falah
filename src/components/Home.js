@@ -13,8 +13,8 @@ import CountDown from "./CountDown";
 export default function Home() {
   const [prayers, setPrayers] = useState(null);
   const { t, i18n } = useTranslation();
-  const [country, setCountry] = useState(null); // لتخزين اسم الدولة
-  const [city, setCity] = useState(null); // لتخزين اسم المدينة
+  const [country, setCountry] = useState(() => localStorage.getItem("falah_country") || "Saudi Arabia"); // لتخزين اسم الدولة
+  const [city, setCity] = useState(() => localStorage.getItem("falah_city") || "Makkah"); // لتخزين اسم المدينة
   const [loading, setLoading] = useState(false); // حالة التحميل
   const [date, setDate] = useState({hijri: "", gregorian: ""});
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -39,55 +39,80 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const hour = currentTime.getHours();
-    const minute = currentTime.getMinutes() / 100;
-    const temp = hour + minute;
-    const fajr = prayers?.Fajr.split(':');
-    const dhuhr = prayers?.Dhuhr.split(':');
-    const asr = prayers?.Asr.split(':');
-    const maghrib = prayers?.Maghrib.split(':');
-    const isha = prayers?.Isha.split(':');
+    if (country) {
+      localStorage.setItem("falah_country", country);
+    }
+  }, [country]);
 
-    const fajrTime = parseInt(fajr?.[0]) + parseInt(fajr?.[1]) / 100;
-    const dhuhrTime = parseInt(dhuhr?.[0]) + parseInt(dhuhr?.[1]) / 100;
-    const asrTime = parseInt(asr?.[0]) + parseInt(asr?.[1]) / 100;
-    const maghribTime = parseInt(maghrib?.[0]) + parseInt(maghrib?.[1]) / 100;
-    const ishaTime = parseInt(isha?.[0]) + parseInt(isha?.[1]) / 100;
+  useEffect(() => {
+    if (city) {
+      localStorage.setItem("falah_city", city);
+    }
+  }, [city]);
 
+  useEffect(() => {
+    if (!prayers) return;
 
-  if (temp > ishaTime){
-    setActive('Isha');
-    setNext('Fajr');
-    setCountdown(fajr)
-  }else if (temp > fajrTime && temp < dhuhrTime){
-    setActive('Fajr');
-    setNext('Dhuhr');
-    setCountdown(dhuhr)
-  }else if (temp > dhuhrTime && temp < asrTime){
-    setNext('Asr');
-    setActive('Dhuhr');
-    setCountdown(asr)
-  }else if (temp > asrTime && temp < maghribTime){
-    setActive('Asr');
-    setNext('Maghrib');
-    setCountdown(maghrib)
-  }else if (temp > maghribTime && temp < ishaTime){
-    setActive('Maghrib');
-    setNext('Isha');
-    setCountdown(isha)
-  }
+    const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+
+    const timeToMinutes = (timeStr) => {
+      if (!timeStr) return 0;
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const fajrMinutes = timeToMinutes(prayers.Fajr);
+    const dhuhrMinutes = timeToMinutes(prayers.Dhuhr);
+    const asrMinutes = timeToMinutes(prayers.Asr);
+    const maghribMinutes = timeToMinutes(prayers.Maghrib);
+    const ishaMinutes = timeToMinutes(prayers.Isha);
+
+    const fajr = prayers.Fajr.split(':');
+    const dhuhr = prayers.Dhuhr.split(':');
+    const asr = prayers.Asr.split(':');
+    const maghrib = prayers.Maghrib.split(':');
+    const isha = prayers.Isha.split(':');
+
+    if (currentMinutes >= ishaMinutes || currentMinutes < fajrMinutes) {
+      setActive('Isha');
+      setNext('Fajr');
+      setCountdown(fajr);
+    } else if (currentMinutes >= fajrMinutes && currentMinutes < dhuhrMinutes) {
+      setActive('Fajr');
+      setNext('Dhuhr');
+      setCountdown(dhuhr);
+    } else if (currentMinutes >= dhuhrMinutes && currentMinutes < asrMinutes) {
+      setActive('Dhuhr');
+      setNext('Asr');
+      setCountdown(asr);
+    } else if (currentMinutes >= asrMinutes && currentMinutes < maghribMinutes) {
+      setActive('Asr');
+      setNext('Maghrib');
+      setCountdown(maghrib);
+    } else if (currentMinutes >= maghribMinutes && currentMinutes < ishaMinutes) {
+      setActive('Maghrib');
+      setNext('Isha');
+      setCountdown(isha);
+    }
 
   }, [currentTime, prayers]);
+
   useEffect(() => {
       if (city && country) {
-        fetch(`http://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`) // method=2 لطريقة السعودية
+        setLoading(true);
+        fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`) // method=2 لطريقة السعودية
           .then(res => res.json())
           .then(data => {
-            setPrayers(data.data.timings);
+            if (data && data.data) {
+              setPrayers(data.data.timings);
+              setDate({hijri: data.data.date.hijri.date, gregorian: data.data.date.gregorian.date});
+            }
             setLoading(false);
-            setDate({hijri: data.data.date.hijri.date, gregorian: data.data.date.gregorian.date});
           })
-          .catch(err => console.error('Error fetching prayer times:', err));
+          .catch(err => {
+            console.error('Error fetching prayer times:', err);
+            setLoading(false);
+          });
       }
     }, [city, country]);
 
