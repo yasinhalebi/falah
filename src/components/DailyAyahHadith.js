@@ -10,7 +10,6 @@ const DailyAyahHadith = () => {
   const [hadith, setHadith] = useState({ text: 'جارٍ التحميل...', resourse: '' });
   const [hadithEnglish, setHadithEnglish] = useState({ text: 'loading...', resourse: '' });
   const [hadithTurkish, setHadithTurkish] = useState({ text: 'yükleniyor...', resourse: '' });
-  const [isDark, setIsDark] = useState(false);
 
   const languages = [
     { value: 'ar', label: 'العربية (تفسير الميسر)', edition: 'ar' },
@@ -165,6 +164,7 @@ const DailyAyahHadith = () => {
 
     fetchAyahs();
     fetchHadith();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

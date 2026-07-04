@@ -4,7 +4,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useTranslation } from 'react-i18next';
 
 export default function CountDown({ hour, minute }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [remainingTime, setRemainingTime] = useState(0);
   const [text, setText] = useState("00:00:00");
   const [currentTime, setCurrentTime] = useState(new Date());

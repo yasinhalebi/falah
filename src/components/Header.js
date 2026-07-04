@@ -34,6 +34,8 @@ export default function Header(){
         document.documentElement.classList.toggle('dark', !darkMood);
     }
     
+    const getFlagImg = (id) => id === "ar" ? ar : id === "us" ? us : id === "tr" ? tr : null;
+
     return (<header className="dark:bg-[#1E2A38] bg-[#2E6DB4] w-full pt-4  dark:border-[#2A313C] backdrop-blur-lg shadow-lg shadow-gray-900/20 fixed z-50 ">
                 <div className='flex row justify-between items-center lg:px-40 px-10 md:px-30 mx-auto'>
                 <div className='flex row gap-2 items-center hover:cursor-pointer'>
@@ -45,7 +47,7 @@ export default function Header(){
 
                         <button onClick={hanldeOpen} className='flex row gap-2 items-center px-3 py-1 group'>
                             <span className='text-slate-100  group-hover:text-white group-hover:font-bold'>{language.flag}</span>
-                            <img src={language.id === "ar" && (ar) || language.id === "us" && (us) || language.id === "tr" && (tr)} alt={language.label} className="w-4 h-4 rounded-sm" />
+                            <img src={getFlagImg(language.id)} alt={language.label} className="w-4 h-4 rounded-sm" />
                         </button>
 
 
@@ -57,7 +59,7 @@ export default function Header(){
                                     onClick={() => { setLanguage(lang); setOpen(false); }}
                                     className="flex row px-3 py-2 cursor-pointer hover:bg-gray-800 rounded-md flex items-center gap-2 "
                                 >
-                                    <span>{lang.flag}</span> <img src={lang.id === "ar" && (ar) || lang.id === "us" && (us) || lang.id === "tr" && (tr)} alt={lang.label} className="w-4 h-4 rounded-sm" />
+                                    <span>{lang.flag}</span> <img src={getFlagImg(lang.id)} alt={lang.label} className="w-4 h-4 rounded-sm" />
                                 </li>
                             ))}
                             </ul>

@@ -18,7 +18,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false); // حالة التحميل
   const [date, setDate] = useState({hijri: "", gregorian: ""});
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [timings, setTimings] = useState(0);
   const [next, setNext] = useState("");
   const [active, setActive] = useState("");
   const [countdown, setCountdown] = useState(null);
